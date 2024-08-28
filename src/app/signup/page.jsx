@@ -1,9 +1,13 @@
-'use client';
-import Link from 'next/link';
-import { useState } from 'react';
+"use client";
+
+import Image from "next/image";
+import Link from "next/link";
+import { useState } from "react";
 import { useRouter } from 'next/navigation';
 
-export default function LoginForm() {
+export default function SignupForm() {
+  const [firstname, setFirstname] = useState('');
+  const [lastname, setLastname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -11,37 +15,61 @@ export default function LoginForm() {
 
   async function handleSubmit(event) {
     event.preventDefault();
-  
+
     try {
-      const response = await fetch('/api/login', {
+      const response = await fetch('/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ email, password }),
+        body: JSON.stringify({ firstname, lastname, email, password }),
       });
-  
+
       const data = await response.json();
       if (response.ok) {
-        // Save token and redirect or handle success
-        localStorage.setItem('token', data.token);
-        router.push('/'); // Redirect to a protected route
+        router.push('/login');
       } else {
-        setError(data.message);
+        setError(data.message || 'Failed to sign up');
       }
     } catch (error) {
       console.error('An unexpected error occurred:', error);
+      setError('An unexpected error occurred. Please try again.');
     }
   }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-50">
       <div className="bg-white p-8 rounded-lg shadow-lg max-w-sm w-full">
-        <h1 className="text-2xl font-bold text-center mb-2">Log In</h1>
-        <p className="text-gray-500 text-center mb-6">Enter your credentials to log in</p>
+        <div className="flex justify-center mb-6">
+          <Link href="/">
+            <Image src="/logo.jpg" width={120} height={220} alt="Logo" />
+          </Link>
+        </div>
+        <h1 className="text-2xl font-bold text-center mb-2">Welcome!</h1>
+        <p className="text-gray-500 text-center mb-6">Sign up to get started</p>
         {error && <p className="text-red-500 text-center">{error}</p>}
 
         <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <input
+              type="text"
+              value={firstname}
+              onChange={(e) => setFirstname(e.target.value)}
+              placeholder="First name"
+              aria-label="First name"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
+          <div className="mb-4">
+            <input
+              type="text"
+              value={lastname}
+              onChange={(e) => setLastname(e.target.value)}
+              placeholder="Last name"
+              aria-label="Last name"
+              className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+            />
+          </div>
           <div className="mb-4">
             <input
               type="email"
@@ -66,15 +94,15 @@ export default function LoginForm() {
             type="submit"
             className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            Log In
+            Sign up
           </button>
-          <div className="mt-4 text-center">
-          <Link href="/signup" className="text-blue-600 font-semibold hover:underline">
-           new user? sign up
+        </form>
+
+        <div className="mt-4 text-center">
+          <Link href="/login" className="text-blue-600 font-semibold hover:underline">
+            Already a user? Log in
           </Link>
         </div>
-          
-        </form>
       </div>
     </div>
   );
