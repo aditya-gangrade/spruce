@@ -1,8 +1,8 @@
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { useState } from "react";
+import Image from 'next/image';
+import Link from 'next/link';
+import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 export default function SignupForm() {
@@ -11,13 +11,15 @@ export default function SignupForm() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   async function handleSubmit(event) {
     event.preventDefault();
+    setLoading(true);
 
     try {
-      const response = await fetch('/api/signup', {
+      const response = axios.post('/api/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -27,13 +29,15 @@ export default function SignupForm() {
 
       const data = await response.json();
       if (response.ok) {
-        router.push('/login');
+        router.push('/login'); // Redirect to the login page after successful signup
       } else {
         setError(data.message || 'Failed to sign up');
       }
     } catch (error) {
       console.error('An unexpected error occurred:', error);
       setError('An unexpected error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -58,6 +62,7 @@ export default function SignupForm() {
               placeholder="First name"
               aria-label="First name"
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={loading}
             />
           </div>
           <div className="mb-4">
@@ -68,6 +73,7 @@ export default function SignupForm() {
               placeholder="Last name"
               aria-label="Last name"
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={loading}
             />
           </div>
           <div className="mb-4">
@@ -78,6 +84,7 @@ export default function SignupForm() {
               placeholder="Email"
               aria-label="Email"
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={loading}
             />
           </div>
           <div className="mb-6">
@@ -88,13 +95,15 @@ export default function SignupForm() {
               placeholder="Password"
               aria-label="Password"
               className="w-full p-3 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
+              disabled={loading}
             />
           </div>
           <button
             type="submit"
             className="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 transition-colors"
+            disabled={loading}
           >
-            Sign up
+            {loading ? 'Signing up...' : 'Sign up'}
           </button>
         </form>
 

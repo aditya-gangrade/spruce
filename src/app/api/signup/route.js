@@ -16,12 +16,14 @@ export async function POST(req) {
       );
     }
 
-    // Check if user already exists
     const existingUser = await User.findOne({ email });
     if (existingUser) {
-      return new Response(JSON.stringify({ message: "User already exists." }), {
-        status: 409,
-      });
+      return new Response(
+        JSON.stringify({ message: `${email} User already exists.` }),
+        {
+          status: 409,
+        }
+      );
     }
 
     // Hash the password
